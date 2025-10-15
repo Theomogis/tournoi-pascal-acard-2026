@@ -1,0 +1,332 @@
+<!--
+Tournoi Pascal Acard 2026 - Site (single-file)
+Author: Generated for Olympique Pavillais
+Colors: primary red (#c8102e), secondary white
+Date of tournament: 14 May 2026
+Venue: Stade Lucien Lecuyer - Pavilly, 76570
+Contact: 500223@lfnfoot.com | 06 07 84 92 78 - Gregory Meunier
+
+INSTRUCTIONS (quick):
+1) Duplicate the Google Sheet template below in your Google Drive (create a new Google Sheet and copy the two sheets named "Matches" and "Teams" with header rows exactly as shown).
+2) In Google Sheets: File → Publish to the web → choose the sheet (Matches) → Comma-separated values (.csv) → Publish. Copy the published CSV URL.
+   Do the same for the Teams sheet and publish it; you'll get two CSV URLs.
+   (Alternative: use Google Apps Script web app if you want a JSON endpoint—see bottom of this file for Apps Script).
+3) In the HTML below, replace the two constants SHEET_MATCHES_CSV and SHEET_TEAMS_CSV with the two published CSV URLs.
+4) Put this file as index.html in a GitHub repo named like olympique-pavillais/tournoi-pascal-acard-2026 and enable GitHub Pages (branch main, /root). The site will be live at https://<user>.github.io/<repo>
+
+Google Sheet templates (create two sheets named exactly):
+
+Sheet "Matches" (columns header row):
+MatchID,Date,Time,Group,TeamA,TeamB,ScoreA,ScoreB,Venue
+
+Example rows:
+1,2026-05-14,09:00,A,Olympique Pavillais,AS Rouge,2,1,Terrain 1
+2,2026-05-14,09:45,A,FC Blancs,Les Etoiles,0,0,Terrain 1
+
+Sheet "Teams" (columns):
+TeamName,ShortName,LogoURL
+
+Example rows:
+Olympique Pavillais,OP,https://example.com/logo-op.png
+AS Rouge,ASR,
+
+NOTE: LogoURL can be blank. ShortName will be used in compact tables.
+
+APPS SCRIPT (optional) to return JSON (paste into Extensions → Apps Script):
+function doGet(e){
+  var ss = SpreadsheetApp.openById('PUT_YOUR_SHEET_ID_HERE');
+  var matches = ss.getSheetByName('Matches').getDataRange().getValues();
+  var teams = ss.getSheetByName('Teams').getDataRange().getValues();
+  var mh = matches.shift(); // header
+  var th = teams.shift();
+  var mdata = matches.map(function(r){
+    var obj = {};
+    mh.forEach(function(k,i){ obj[k]=r[i]; });
+    return obj;
+  });
+  var tdata = teams.map(function(r){
+    var obj = {};
+    th.forEach(function(k,i){ obj[k]=r[i]; });
+    return obj;
+  });
+  return ContentService.createTextOutput(JSON.stringify({matches:mdata,teams:tdata})).setMimeType(ContentService.MimeType.JSON);
+}
+
+-->
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tournoi Pascal Acard 2026 — Olympique Pavillais</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#c8102e;--white:#ffffff;--dark:#111;--muted:#666}
+    body{font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--dark);margin:0;background:#fff}
+    header{background:linear-gradient(0deg,rgba(200,16,46,0.08),rgba(200,16,46,0.02)),#fff;border-bottom:4px solid var(--red);padding:18px}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:68px;height:68px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:20px}
+    nav{margin-left:auto}
+    nav a{margin-left:12px;text-decoration:none;color:var(--dark);font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:center;padding:28px 0}
+    .hero h1{font-size:28px;margin:0;color:var(--red)}
+    .countdown{background:#fff;border:2px dashed var(--red);padding:12px;border-radius:10px;text-align:center}
+    .btn{display:inline-block;background:var(--red);color:var(--white);padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    section{padding:22px 0;border-top:1px solid #f2f2f2}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,0.04)}
+
+    /* Results Table */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+    th{background:#fff;font-weight:700}
+    .score{font-weight:800;color:var(--red)}
+
+    /* Standings */
+    .standings table th, .standings table td{text-align:center}
+
+    footer{padding:18px;text-align:center;color:var(--muted)}
+
+    /* Responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.grid-3{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex;align-items:center">
+      <div class="brand">
+        <div class="logo">OP</div>
+        <div>
+          <div style="font-size:14px;color:var(--muted)">Tournoi</div>
+          <div style="font-weight:700">Tournoi Pascal Acard 2026</div>
+          <div style="font-size:13px;color:var(--muted)">Olympique Pavillais — 14 mai 2026</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#home">Accueil</a>
+        <a href="#results">Résultats</a>
+        <a href="#teams">Équipes</a>
+        <a href="#info">Infos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="home" class="hero">
+      <div>
+        <h1>Tournoi Pascal Acard — 14 mai 2026</h1>
+        <p style="margin-top:8px;color:var(--muted)">Stade Lucien Lecuyer - Pavilly, 76570</p>
+        <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+          <div class="countdown" id="countdown">Chargement du compte à rebours...</div>
+          <a class="btn" href="#results">Voir les résultats</a>
+        </div>
+        <p style="margin-top:16px;color:var(--muted)">Contact : <a href="mailto:500223@lfnfoot.com">500223@lfnfoot.com</a> · 06 07 84 92 78 (Grégory Meunier)</p>
+      </div>
+      <div>
+        <div class="card">
+          <h3 style="margin:6px 0">Infos rapides</h3>
+          <ul style="padding-left:18px;margin:8px 0;color:var(--muted)">
+            <li>Début : 09:00</li>
+            <li>Format : poules + phases finales</li>
+            <li>Restauration sur place</li>
+          </ul>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:6px 0">Lieu</h4>
+          <p style="margin:6px 0;color:var(--muted)">Stade Lucien Lecuyer - Pavilly, 76570</p>
+          <a class="btn" href="https://www.google.com/maps/search/?api=1&query=Stade+Lucien+Lecuyer+Pavilly" target="_blank">Voir sur Google Maps</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="results">
+      <h2>Résultats & Classements</h2>
+      <div class="grid-3" style="margin-top:12px">
+        <div class="card" style="grid-column:span 2">
+          <h3>Matchs</h3>
+          <div id="matchesTable">Chargement des matchs…</div>
+        </div>
+        <div class="card standings">
+          <h3>Classement général</h3>
+          <div id="standings">Chargement du classement…</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="teams">
+      <h2>Équipes & Planning</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:260px" class="card">
+          <h3>Équipes</h3>
+          <div id="teamsList">Chargement des équipes…</div>
+        </div>
+        <div style="flex:1;min-width:300px" class="card">
+          <h3>Planning</h3>
+          <div id="upcoming">Chargement du planning…</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="info">
+      <h2>Infos pratiques</h2>
+      <div class="card" style="margin-top:12px">
+        <p><strong>Adresse :</strong> Stade Lucien Lecuyer - Pavilly, 76570</p>
+        <p><strong>Contact :</strong> <a href="mailto:500223@lfnfoot.com">500223@lfnfoot.com</a> · 06 07 84 92 78 (Grégory Meunier)</p>
+        <p><strong>Restauration :</strong> Buvette et food-trucks (sur place)</p>
+        <p><strong>Parking :</strong> Parkings du stade et zones alentours</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">© Olympique Pavillais — Tournoi Pascal Acard 2026</div>
+  </footer>
+
+  <script>
+    // ---------------------------
+    // CONFIG — REPLACE THESE URLs
+    // ---------------------------
+    // Publish each sheet to the web (CSV) and paste the published CSV URLs below.
+    const SHEET_MATCHES_CSV = "PASTE_PUBLISHED_MATCHES_CSV_URL_HERE";
+    const SHEET_TEAMS_CSV = "PASTE_PUBLISHED_TEAMS_CSV_URL_HERE";
+
+    // ---------------------------
+    // Utility: parse CSV into array of objects (simple)
+    function csvToObjects(csvText){
+      const lines = csvText.trim().split('\n').map(l=>l.trim());
+      const headers = lines.shift().split(',').map(h=>h.trim());
+      return lines.filter(l=>l).map(line=>{
+        // naive split — OK if your fields don't contain commas. If they do, use a robust CSV parser.
+        const cols = line.split(',');
+        const obj = {};
+        headers.forEach((h,i)=> obj[h]= (cols[i]||"").trim());
+        return obj;
+      });
+    }
+
+    // fetch CSV and parse
+    async function fetchCSV(url){
+      const res = await fetch(url);
+      const txt = await res.text();
+      return csvToObjects(txt);
+    }
+
+    // compute standings
+    function computeStandings(matches){
+      const table = {};
+      matches.forEach(m=>{
+        const a = m.TeamA; const b = m.TeamB;
+        const sa = m.ScoreA === '' ? null : parseInt(m.ScoreA,10);
+        const sb = m.ScoreB === '' ? null : parseInt(m.ScoreB,10);
+        if(!table[a]) table[a]={team:a,played:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};
+        if(!table[b]) table[b]={team:b,played:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};
+        if(sa===null || sb===null) return; // skip unplayed
+        table[a].played++; table[b].played++;
+        table[a].gf += sa; table[a].ga += sb;
+        table[b].gf += sb; table[b].ga += sa;
+        if(sa>sb){ table[a].w++; table[a].pts+=3; table[b].l++; }
+        else if(sa<sb){ table[b].w++; table[b].pts+=3; table[a].l++; }
+        else{ table[a].d++; table[b].d++; table[a].pts+=1; table[b].pts+=1; }
+      });
+      const arr = Object.values(table);
+      arr.forEach(r=> r.gd = r.gf - r.ga);
+      arr.sort((x,y)=> (y.pts - x.pts) || (y.gd - x.gd) || (y.gf - x.gf) || x.team.localeCompare(y.team));
+      return arr;
+    }
+
+    // render matches
+    function renderMatches(matches){
+      if(matches.length===0) { document.getElementById('matchesTable').innerHTML='Aucun match trouvé.'; return; }
+      const html = ['<table><thead><tr><th>Heure</th><th>Poule</th><th>Match</th><th>Score</th><th>Lieu</th></tr></thead><tbody>'];
+      matches.forEach(m=>{
+        const time = m.Time||m.Date;
+        const score = (m.ScoreA!=='' && m.ScoreB!=='') ? `<span class="score">${m.ScoreA} - ${m.ScoreB}</span>` : '—';
+        html.push(`<tr><td>${time}</td><td>${m.Group||''}</td><td>${m.TeamA} vs ${m.TeamB}</td><td>${score}</td><td>${m.Venue||''}</td></tr>`);
+      });
+      html.push('</tbody></table>');
+      document.getElementById('matchesTable').innerHTML = html.join('');
+    }
+
+    function renderStandings(standings){
+      if(standings.length===0){ document.getElementById('standings').innerHTML='Aucun classement.'; return; }
+      const rows = ['<table><thead><tr><th>Pos</th><th>Équipe</th><th>J</th><th>G</th><th>N</th><th>P</th><th>+/-</th><th>Pts</th></tr></thead><tbody>'];
+      standings.forEach((s,i)=>{
+        rows.push(`<tr><td>${i+1}</td><td style="text-align:left">${s.team}</td><td>${s.played}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td><td>${s.gd}</td><td>${s.pts}</td></tr>`);
+      });
+      rows.push('</tbody></table>');
+      document.getElementById('standings').innerHTML = rows.join('');
+    }
+
+    function renderTeams(teams){
+      if(teams.length===0){ document.getElementById('teamsList').innerHTML='Aucune équipe.'; return; }
+      const html = ['<ul style="list-style:none;padding:0;margin:0">'];
+      teams.forEach(t=>{
+        const logo = t.LogoURL ? `<img src="${t.LogoURL}" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:6px;margin-right:8px">` : '<div style="width:36px;height:36px;background:var(--red);color:var(--white);display:inline-flex;align-items:center;justify-content:center;border-radius:6px;margin-right:8px">'+(t.ShortName||t.TeamName).slice(0,3).toUpperCase()+'</div>';
+        html.push(`<li style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f4f4f4">${logo}<div><strong>${t.TeamName}</strong><div style="color:var(--muted);font-size:13px">${t.ShortName||''}</div></div></li>`);
+      });
+      html.push('</ul>');
+      document.getElementById('teamsList').innerHTML = html.join('');
+    }
+
+    function renderUpcoming(matches){
+      const upcoming = matches.filter(m=> (m.ScoreA==='' || m.ScoreB===''))
+        .sort((a,b)=> (a.Date||'') > (b.Date||'') ? 1 : -1).slice(0,6);
+      if(upcoming.length===0){ document.getElementById('upcoming').innerHTML='Aucun match à venir.'; return; }
+      const html = ['<ul style="list-style:none;padding:0;margin:0">'];
+      upcoming.forEach(m=> html.push(`<li style="padding:8px 0;border-bottom:1px solid #f4f4f4">${m.Date} ${m.Time} — ${m.TeamA} vs ${m.TeamB}<div style="color:var(--muted);font-size:13px">${m.Venue||''}</div></li>`));
+      html.push('</ul>');
+      document.getElementById('upcoming').innerHTML = html.join('');
+    }
+
+    // countdowm
+    function initCountdown(){
+      const target = new Date('2026-05-14T09:00:00');
+      function tick(){
+        const now = new Date();
+        const diff = Math.max(0, target - now);
+        const d = Math.floor(diff / (1000*60*60*24));
+        const h = Math.floor(diff / (1000*60*60) % 24);
+        const m = Math.floor(diff / (1000*60) % 60);
+        const s = Math.floor(diff / 1000 % 60);
+        document.getElementById('countdown').innerText = `${d}j ${h}h ${m}m ${s}s`;
+      }
+      tick(); setInterval(tick,1000);
+    }
+
+    // MAIN: fetch data, render
+    async function loadAndRender(){
+      try{
+        if(!SHEET_MATCHES_CSV || !SHEET_TEAMS_CSV){
+          document.getElementById('matchesTable').innerHTML='Veuillez configurer les URLs CSV publiées depuis Google Sheets dans le code.';
+          document.getElementById('teamsList').innerHTML='Veuillez configurer les URLs CSV publiées depuis Google Sheets dans le code.';
+          return;
+        }
+        const [matches, teams] = await Promise.all([fetchCSV(SHEET_MATCHES_CSV), fetchCSV(SHEET_TEAMS_CSV)]);
+        // normalize keys (trim)
+        const mnorm = matches.map(m=>{
+          return {
+            MatchID: m.MatchID||'', Date: m.Date||'', Time: m.Time||'', Group: m.Group||'', TeamA: m.TeamA||'', TeamB: m.TeamB||'', ScoreA: m.ScoreA||'', ScoreB: m.ScoreB||'', Venue: m.Venue||''
+          };
+        });
+        const tnorm = teams.map(t=>({TeamName:t.TeamName||'', ShortName:t.ShortName||'', LogoURL:t.LogoURL||''}));
+        renderMatches(mnorm);
+        const standings = computeStandings(mnorm);
+        renderStandings(standings);
+        renderTeams(tnorm);
+        renderUpcoming(mnorm);
+      }catch(err){
+        console.error(err);
+        document.getElementById('matchesTable').innerText = 'Erreur en chargeant les données. Vérifie les URLs CSV et la publication des feuilles.';
+      }
+    }
+
+    // init
+    initCountdown();
+    loadAndRender();
+
+  </script>
+</body>
+</html>
