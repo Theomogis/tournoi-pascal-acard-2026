@@ -123,8 +123,8 @@
   </footer>
 
   <script>
-    const SHEET_MATCHES_CSV = "PASTE_PUBLISHED_MATCHES_CSV_URL_HERE";
-    const SHEET_TEAMS_CSV = "PASTE_PUBLISHED_TEAMS_CSV_URL_HERE";
+    const SHEET_MATCHES_CSV = https://docs.google.com/spreadsheets/d/e/2PACX-1vS8f5uWN5TxCSKIS2-2EQWCk6-7780rJae8bPJxsDot1Ny-IqPp4WfYp_cyEzZJU89494I-BzPe5UXD/pubhtml?gid=0&single=true;
+    const SHEET_TEAMS_CSV = https://docs.google.com/spreadsheets/d/e/2PACX-1vS8f5uWN5TxCSKIS2-2EQWCk6-7780rJae8bPJxsDot1Ny-IqPp4WfYp_cyEzZJU89494I-BzPe5UXD/pubhtml?gid=386755218&single=true;
 
     function csvToObjects(csvText){const lines=csvText.trim().split('\n').map(l=>l.trim());const headers=lines.shift().split(',').map(h=>h.trim());return lines.filter(l=>l).map(line=>{const cols=line.split(',');const obj={};headers.forEach((h,i)=>obj[h]=(cols[i]||"").trim());return obj;});}
     async function fetchCSV(url){const res=await fetch(url);const txt=await res.text();return csvToObjects(txt);}
